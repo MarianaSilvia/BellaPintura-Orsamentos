@@ -1,0 +1,251 @@
+// Prisma Multi-Tenant Schema for TintasPro SaaS
+// PostgreSQL Database Schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  MANAGER
+  PAINTER
+}
+
+enum EstimateStatus {
+  DRAFT
+  SENT
+  VIEWED
+  APPROVED
+  REJECTED
+}
+
+enum SurfaceCondition {
+  NEW_PLASTER      // Gesso ou reboco novo (selador + fundo + acabamento)
+  CLEAN_REPAINT    // Repintura limpa e estável
+  DAMAGED_CRACKED  // Paredes danificadas / trincas (massa corrida/acrílica)
+  MOISTURE_TREATED // Umidade tratada (fundo preparador / impermeabilizante)
+}
+
+enum FinishType {
+  LATEX_PVA           // Látex PVA Econômico
+  ACRYLIC_MATTE       // Acrílico Fosco Premium
+  ACRYLIC_SEMIGLOSS   // Acrílico Semibrilho Lavável
+  BURNT_CEMENT        // Cimento Queimado / Marmorato
+  GRAFIATO            // Grafiato Rústico
+  PROJECTED_TEXTURE   // Textura Projetada
+  EPOXY               // Tinta Epóxi Alta Resistência
+}
+
+enum DiscountType {
+  PERCENTAGE
+  FIXED
+}
+
+model Company {
+  id              String       @id @default(cuid())
+  name            String
+  tradeName       String?      // Nome fantasia
+  cnpj            String?      @unique
+  email           String
+  phone           String
+  whatsapp        String?
+  address         String?
+  city            String?
+  state           String?
+  logo            String?      // URL ou Base64 do Logo
+  primaryColor    String       @default("#2563eb") // Cor primária da marca
+  secondaryColor  String       @default("#1e293b")
+  defaultTerms    String?      @db.Text            // Termos e garantia contratuais
+  warrantyDays    Int          @default(90)
+  currency        String       @default("BRL")
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  users           User[]
+  customers       Customer[]
+  estimates       Estimate[]
+  auditLogs       AuditLog[]
+
+  @@map("companies")
+}
+
+model User {
+  id                String       @id @default(cuid())
+  email             String       @unique
+  passwordHash      String
+  name              String
+  role              Role         @default(PAINTER)
+  avatar            String?
+  twoFactorEnabled  Boolean      @default(false)
+  twoFactorSecret   String?
+  companyId         String
+  company           Company      @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+
+  estimatesCreated  Estimate[]
+  auditLogs         AuditLog[]
+
+  @@index([companyId])
+  @@map("users")
+}
+
+model Customer {
+  id          String       @id @default(cuid())
+  name        String
+  email       String
+  phone       String
+  document    String?      // CPF ou CNPJ
+  address     String?
+  city        String?
+  state       String?
+  zipCode     String?
+  notes       String?      @db.Text
+  companyId   String
+  company     Company      @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  estimates   Estimate[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  @@index([companyId])
+  @@map("customers")
+}
+
+model Estimate {
+  id                  String             @id @default(cuid())
+  code                String             // Código único legível Ex: ORC-2026-0042
+  companyId           String
+  company             Company            @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  customerId          String
+  customer            Customer           @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  userId              String?
+  user                User?              @relation(fields: [userId], references: [id], onDelete: SetNull)
+  status              EstimateStatus     @default(DRAFT)
+  title               String             // Ex: "Reforma Pintura Completa - Apto 82"
+  notes               String?            @db.Text
+  
+  // Financeiro
+  totalLabor          Decimal            @db.Decimal(10, 2)
+  totalMaterial       Decimal            @db.Decimal(10, 2)
+  subtotal            Decimal            @db.Decimal(10, 2)
+  discountType        DiscountType       @default(PERCENTAGE)
+  discountValue       Decimal            @default(0) @db.Decimal(10, 2)
+  finalTotal          Decimal            @db.Decimal(10, 2)
+  
+  // Prazos e Condições
+  estimatedDays       Int                @default(5)
+  validityDays        Int                @default(15)
+  paymentTerms        String?            @db.Text // "50% entrada + 50% na conclusão"
+  scheduledStartDate  DateTime?
+
+  // Assinatura Digital e Conformidade Jurídica
+  signedAt            DateTime?
+  signedByName        String?
+  signedByDocument    String?
+  signatureImage      String?            @db.Text // Base64 Canvas
+  signatureIp         String?
+  signatureSha256     String?            // Hash criptográfico do documento assinado
+  signatureUserAgent  String?
+  cloudPdfUrl         String?            // URL no S3/Storage seguro
+  remindersSentCount  Int                @default(0)
+  lastReminderSentAt  DateTime?
+
+  // Relacionamentos
+  environments        Environment[]
+  auditLogs           AuditLog[]
+  signatureRecords    SignatureRecord[]
+
+  createdAt           DateTime           @default(now())
+  updatedAt           DateTime           @updatedAt
+
+  @@index([companyId])
+  @@index([customerId])
+  @@index([code])
+  @@map("estimates")
+}
+
+model Environment {
+  id                  String             @id @default(cuid())
+  estimateId          String
+  estimate            Estimate           @relation(fields: [estimateId], references: [id], onDelete: Cascade)
+  name                String             // Ex: "Sala de Estar Integrada", "Fachada Externa"
+  
+  // Medidas em Metros
+  width               Decimal            @db.Decimal(6, 2)
+  height              Decimal            @db.Decimal(6, 2)
+  wallCount           Int                @default(4)
+  openingsArea        Decimal            @default(0) @db.Decimal(6, 2) // Portas e Janelas descontadas
+  netWallArea         Decimal            @db.Decimal(8, 2) // Área líquida calculada
+  
+  // Especificação Técnica
+  coatsCount          Int                @default(2)
+  surfaceCondition    SurfaceCondition   @default(CLEAN_REPAINT)
+  finishType          FinishType         @default(ACRYLIC_MATTE)
+  paintColorName      String             @default("Branco Neve")
+  paintColorHex       String             @default("#F8FAFC")
+  paintBrand          String             @default("Suvinil / Coral")
+  
+  // Consumo e Valores
+  paintLitersNeeded   Decimal            @db.Decimal(8, 2)
+  cans18L             Int                @default(0)
+  gallons3_6L         Int                @default(0)
+  quarts0_9L          Int                @default(0)
+  laborRatePerM2      Decimal            @db.Decimal(8, 2)
+  laborCost           Decimal            @db.Decimal(10, 2)
+  materialCost        Decimal            @db.Decimal(10, 2)
+  subtotalCost        Decimal            @db.Decimal(10, 2)
+
+  // Simulação Visual / IA
+  originalPhotoUrl    String?            @db.Text
+  simulatedPhotoUrl   String?            @db.Text
+  notes               String?            @db.Text
+
+  createdAt           DateTime           @default(now())
+  updatedAt           DateTime           @updatedAt
+
+  @@index([estimateId])
+  @@map("environments")
+}
+
+model SignatureRecord {
+  id              String       @id @default(cuid())
+  estimateId      String
+  estimate        Estimate     @relation(fields: [estimateId], references: [id], onDelete: Cascade)
+  signerName      String
+  signerEmail     String
+  signerDocument  String?
+  signatureHash   String       // SHA-256
+  ipAddress       String
+  userAgent       String?
+  geoCountry      String?
+  geoCity         String?
+  certificateUrl  String?
+  signedAt        DateTime     @default(now())
+
+  @@index([estimateId])
+  @@map("signature_records")
+}
+
+model AuditLog {
+  id          String       @id @default(cuid())
+  companyId   String
+  company     Company      @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  userId      String?
+  user        User?        @relation(fields: [userId], references: [id], onDelete: SetNull)
+  estimateId  String?
+  estimate    Estimate?    @relation(fields: [estimateId], references: [id], onDelete: SetNull)
+  action      String       // ESTIMATE_CREATED, ESTIMATE_SENT, ESTIMATE_SIGNED, PDF_DOWNLOADED
+  entity      String       // Estimate, Customer, User
+  details     Json?        // Snapshot antes/depois, IP, navegador
+  ipAddress   String?
+  createdAt   DateTime     @default(now())
+
+  @@index([companyId])
+  @@index([estimateId])
+  @@map("audit_logs")
+}

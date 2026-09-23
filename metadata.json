@@ -1,0 +1,6 @@
+{
+  "name": "TintasPro - SaaS de Orçamentos e Simulação Visual",
+  "description": "SaaS completo de orçamentos técnicos com cálculo de tintas, simulador visual de ambientes, propostas comerciais e assinatura digital para pintores e empreiteiros.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
