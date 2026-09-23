@@ -103,9 +103,9 @@ export const SettingsView: React.FC = () => {
           <div className="flex items-center gap-3">
             <Building2 className="w-5 h-5 text-sky-400" />
             <div>
-              <h2 className="text-base font-bold">Alternador Multi-Tenant de Empresas</h2>
+              <h2 className="text-base font-bold">Empresas da demonstração</h2>
               <p className="text-xs text-slate-400">
-                Alterne instantaneamente entre as empresas cadastradas no SaaS.
+                Alterne entre marcas de exemplo para visualizar propostas com identidades diferentes.
               </p>
             </div>
           </div>
@@ -353,7 +353,7 @@ export const SettingsView: React.FC = () => {
           <div className="flex items-center gap-3">
             <Globe className="w-5 h-5 text-sky-600" />
             <div>
-              <p className="text-sm font-bold text-slate-900 dark:text-white">Idioma do SaaS</p>
+              <p className="text-sm font-bold text-slate-900 dark:text-white">Idioma da interface</p>
               <p className="text-xs text-slate-400">Selecione o idioma da interface</p>
             </div>
           </div>

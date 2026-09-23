@@ -2,13 +2,13 @@ import { Language } from '../types';
 
 export const translations = {
   pt: {
-    appTitle: 'TintasPro SaaS',
+    appTitle: 'Bella Pintura',
     tagline: 'Orçamentos Técnicos & Simulação Visual para Pintores Profissionais',
     dashboard: 'Painel Geral',
     estimates: 'Orçamentos',
     newEstimate: 'Novo Orçamento',
     customers: 'Clientes',
-    visualAi: 'Simulador Visual IA',
+    visualAi: 'Simulador Visual',
     settings: 'Configurações',
     auditLogs: 'Histórico & Auditoria',
     approvedRevenue: 'Faturamento Aprovado',
@@ -72,7 +72,7 @@ export const translations = {
     downloadCsvFile: 'Baixar Arquivo CSV',
   },
   en: {
-    appTitle: 'TintasPro SaaS',
+    appTitle: 'Bella Pintura',
     tagline: 'Technical Estimations & Visual AI Simulator for Painting Contractors',
     dashboard: 'Dashboard',
     estimates: 'Estimates',
@@ -142,13 +142,13 @@ export const translations = {
     downloadCsvFile: 'Download CSV File',
   },
   es: {
-    appTitle: 'TintasPro SaaS',
+    appTitle: 'Bella Pintura',
     tagline: 'Presupuestos Técnicos y Simulación Visual para Pintores Profesionales',
     dashboard: 'Panel General',
     estimates: 'Presupuestos',
     newEstimate: 'Nuevo Presupuesto',
     customers: 'Clientes',
-    visualAi: 'Simulador Visual IA',
+    visualAi: 'Simulador Visual',
     settings: 'Configuraciones',
     auditLogs: 'Historial y Auditoría',
     approvedRevenue: 'Facturación Aprobada',

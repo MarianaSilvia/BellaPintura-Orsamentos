@@ -175,7 +175,7 @@ export const CommercialPdfView: React.FC = () => {
         <div className="p-4 rounded-2xl bg-amber-50/60 border-l-4 border-amber-500 border border-amber-200/80 text-xs">
           <div className="flex items-center gap-2 mb-1">
             <span className="font-bold text-slate-900 text-xs tracking-tight">
-              Bela Pintura LTDA — Mais de 30 Anos de Tradição e Excelência
+              Bella Pintura LTDA — Mais de 30 anos de tradição e excelência
             </span>
             <span className="px-2 py-0.5 rounded-full bg-amber-200 text-amber-900 text-[10px] font-bold">
               Desde 1994
@@ -342,7 +342,7 @@ export const CommercialPdfView: React.FC = () => {
 
         {/* Digital Verification Footer */}
         <div className="pt-4 border-t border-slate-100 flex items-center justify-between text-[10px] text-slate-400">
-          <span>Emitido via TintasPro Cloud • Plataforma para Pintores e Empreiteiros</span>
+          <span>Emitido pela Bella Pintura • Proposta digital demonstrativa</span>
           <span>Verificação online: {window.location.origin}/#public-view-{estimate.id}</span>
         </div>
 

@@ -29,7 +29,7 @@ export async function GET(req: Request, context: { params: { id: string } }) {
     // PDF metadata & formatted document structure
     const pdfData = {
       header: {
-        companyName: estimate.company?.name || 'TintasPro Empresa',
+        companyName: estimate.company?.name || 'Bella Pintura',
         cnpj: estimate.company?.cnpj || '',
         phone: estimate.company?.phone || '',
         logoUrl: estimate.company?.logo || '',

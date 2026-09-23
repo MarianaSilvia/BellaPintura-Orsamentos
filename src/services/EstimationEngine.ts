@@ -1,6 +1,6 @@
 /**
  * EstimationEngine.ts
- * Motor de Cálculo em TypeScript Puro para SaaS de Pinturas e Empreiteiros
+ * Motor de cálculo em TypeScript puro para orçamentos de pintura e reformas.
  * 
  * Responsabilidades:
  * 1. Cálculo de área bruta e líquida (descontando portas, janelas e vãos)

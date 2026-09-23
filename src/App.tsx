@@ -1,6 +1,6 @@
 /**
- * TintasPro SaaS - Sistema Completo de Orçamentos e Simulação Visual para Pintores
- * Multi-Tenant Architecture with Real-Time EstimationEngine and Digital Signatures
+ * Bella Pintura - Demo comercial de orçamentos, propostas digitais e simulação visual.
+ * Mantém a experiência local em Vite/React com dados demonstrativos.
  */
 
 import React, { useEffect } from 'react';

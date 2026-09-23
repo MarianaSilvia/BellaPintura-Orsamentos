@@ -125,16 +125,16 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [notifications, setNotifications] = useState<NotificationItem[]>([
     {
       id: 'notif_welcome',
-      title: 'Sistema Conectado',
-      message: 'Bem-vindo ao TintasPro SaaS. Isolamento Multi-Tenant ativo para ' + currentCompany.name,
+      title: 'Demo Bella Pintura pronta',
+      message: 'Use a vitrine, o simulador e a proposta digital para apresentar a experiência ao cliente.',
       type: 'info',
       timestamp: new Date().toISOString(),
       read: false,
     },
   ]);
 
-  const [currentView, setCurrentView] = useState<AppView>('dashboard');
-  const [selectedEstimateId, setSelectedEstimateId] = useState<string | null>('est_001');
+  const [currentView, setCurrentView] = useState<AppView>('landing');
+  const [selectedEstimateId, setSelectedEstimateId] = useState<string | null>('est_002');
   const [selectedCustomerIdForNewEstimate, setSelectedCustomerIdForNewEstimate] = useState<string | null>(null);
   const [simulationPresetForNewEstimate, setSimulationPresetForNewEstimate] = useState<{
     finishType: any;
@@ -262,7 +262,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
             signatureImage,
             signatureIp: simulatedIp,
             signatureSha256: hash,
-            signedPdfCloudUrl: `https://storage.tintaspro.cloud/vault/${e.code}-signed.pdf`,
+            signedPdfCloudUrl: `demo://bella-pintura/propostas/${e.code}-assinado.pdf`,
             updatedAt: timestamp,
           };
         }

@@ -1,5 +1,5 @@
 /**
- * NextAuth Configuration for Multi-Tenant SaaS
+ * Rascunho futuro de autenticação para uma versão com login real.
  * Path: src/app/api/auth/[...nextauth]/route.ts
  * Injects companyId and role into JWT Token and Session for tenant isolation
  */

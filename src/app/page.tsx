@@ -28,9 +28,7 @@ import {
   Home,
   Hammer,
   AlertCircle,
-  Box
 } from 'lucide-react';
-import Interactive3DWall, { WallFinishConfig } from '../components/landing/Interactive3DWall';
 import AboutSection from '../components/landing/AboutSection';
 import InteractiveHomeTour, { TourEnvironmentId } from '../components/landing/InteractiveHomeTour';
 
@@ -56,20 +54,18 @@ export default function LandingPage({
   const [quoteService, setQuoteService] = useState('Pintura Fina Interna');
   const [quoteCity, setQuoteCity] = useState('São Paulo - SP');
   const [quoteSuccess, setQuoteSuccess] = useState(false);
-  const [heroViewMode, setHeroViewMode] = useState<'3d' | 'proposal'>('3d');
 
   // Demo estimates known in the system
   const DEMO_ESTIMATES = [
-    { code: 'ORC-2026-001', id: 'est_001', client: 'Condomínio Reserva dos Pássaros' },
-    { code: 'ORC-2026-002', id: 'est_002', client: 'Dra. Camila Vasconcelos' },
-    { code: 'ORC-2026-003', id: 'est_003', client: 'Roberto Alencar (Apto 142)' },
+    { code: 'ORC-2026-0042', id: 'est_001', client: 'Mariana B. Silva' },
+    { code: 'ORC-2026-0043', id: 'est_002', client: 'Dr. Eduardo Vasconcelos' },
   ];
 
   const handleSearchEstimate = (e: React.FormEvent) => {
     e.preventDefault();
     const clean = estimateQuery.trim().toUpperCase();
     if (!clean) {
-      setSearchError('Por favor, informe o código do orçamento (ex: ORC-2026-001) ou CPF.');
+      setSearchError('Por favor, informe o código do orçamento (ex: ORC-2026-0043) ou CPF.');
       return;
     }
 
@@ -214,7 +210,7 @@ export default function LandingPage({
             Novidade 2026
           </span>
           <span>
-            Simule a cor das suas paredes por foto com IA antes de comprar a tinta!
+            Veja cores e acabamentos na sua parede antes de comprar a tinta.
           </span>
           <button
             type="button"
@@ -256,7 +252,7 @@ export default function LandingPage({
               Tour de Ambientes
             </a>
             <a href="#simulador" className="hover:text-white transition">
-              Simulador Visual IA
+              Simulador Visual
             </a>
             <a href="#diferenciais" className="hover:text-white transition">
               Diferenciais
@@ -285,7 +281,7 @@ export default function LandingPage({
               className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-bold text-xs shadow-md shadow-sky-600/30 transition active:scale-95"
               title="Acessar o Painel de Gestão e Criação de Orçamentos"
             >
-              <span>Área do Pintor / Login</span>
+              <span>Área do Pintor</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </button>
           </div>
@@ -317,9 +313,8 @@ export default function LandingPage({
               </h1>
 
               <p className="text-sm sm:text-base text-slate-300 max-w-2xl mx-auto lg:mx-0 leading-relaxed">
-                Esqueça as surpresas e a bagunça na obra. Visualize a simulação de cores das suas paredes
-                por foto com Inteligência Artificial e receba uma proposta técnica detalhada em PDF com
-                garantia contratual de até 5 anos.
+                Esqueça as surpresas e a bagunça na obra. Visualize cores e acabamentos antes de aprovar,
+                receba uma proposta clara com materiais, prazo, garantia e assinatura online.
               </p>
 
               {/* Action Buttons */}
@@ -379,46 +374,9 @@ export default function LandingPage({
 
             </div>
 
-            {/* Hero Right Visual: Interactive 3D Wall or Proposal Preview */}
+            {/* Hero Right Visual: Proposal Preview */}
             <div className="lg:col-span-5 relative">
-              {/* Tab Selector: 3D Simulator vs Proposal */}
-              <div className="flex items-center justify-center gap-2 mb-3">
-                <button
-                  type="button"
-                  onClick={() => setHeroViewMode('3d')}
-                  className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold transition ${
-                    heroViewMode === '3d'
-                      ? 'bg-sky-500 text-white shadow-md shadow-sky-500/30'
-                      : 'bg-slate-900 text-slate-400 hover:text-white border border-slate-800'
-                  }`}
-                >
-                  <Box className="w-3.5 h-3.5" />
-                  <span>Parede 3D Interativa</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setHeroViewMode('proposal')}
-                  className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold transition ${
-                    heroViewMode === 'proposal'
-                      ? 'bg-sky-500 text-white shadow-md shadow-sky-500/30'
-                      : 'bg-slate-900 text-slate-400 hover:text-white border border-slate-800'
-                  }`}
-                >
-                  <FileText className="w-3.5 h-3.5" />
-                  <span>Proposta Digital</span>
-                </button>
-              </div>
-
-              {heroViewMode === '3d' ? (
-                <div className="w-full">
-                  <Interactive3DWall
-                    onSelectFinish={(finish) => {
-                      setQuoteService(`Acabamento: ${finish.name}`);
-                    }}
-                  />
-                </div>
-              ) : (
-                <div className="relative mx-auto max-w-md bg-gradient-to-b from-slate-800 to-slate-900 rounded-3xl p-6 sm:p-7 border border-slate-700/80 shadow-2xl shadow-sky-950/50">
+              <div className="relative mx-auto max-w-md bg-gradient-to-b from-slate-800 to-slate-900 rounded-3xl p-6 sm:p-7 border border-slate-700/80 shadow-2xl shadow-sky-950/50">
                   {/* Decorative Pill */}
                   <div className="flex items-center justify-between pb-4 border-b border-slate-700/60 mb-5">
                     <div className="flex items-center gap-2">
@@ -428,7 +386,7 @@ export default function LandingPage({
                       </span>
                     </div>
                     <span className="text-[11px] font-mono text-sky-400 font-bold bg-sky-950/80 px-2.5 py-1 rounded-lg border border-sky-800">
-                      ORC-2026-001
+                      ORC-2026-0043
                     </span>
                   </div>
 
@@ -441,7 +399,7 @@ export default function LandingPage({
                     />
                     <div className="absolute top-2.5 left-2.5 px-2.5 py-1 rounded-lg bg-slate-900/90 backdrop-blur-md text-[10px] font-bold text-emerald-400 flex items-center gap-1 border border-emerald-500/30">
                       <Sparkles className="w-3 h-3" />
-                      <span>Simulação 3D Aprovada</span>
+                      <span>Simulação visual aprovada</span>
                     </div>
                     <div className="absolute bottom-2.5 right-2.5 px-2.5 py-1 rounded-lg bg-slate-900/90 text-[10px] font-bold text-white border border-slate-700">
                       Cimento Queimado Platina
@@ -484,8 +442,7 @@ export default function LandingPage({
                       Ver Demonstração
                     </a>
                   </div>
-                </div>
-              )}
+              </div>
             </div>
 
           </div>
@@ -622,7 +579,7 @@ export default function LandingPage({
         }}
       />
 
-      {/* AI Visual Simulation Section (Diferencial Competitivo) */}
+      {/* Visual Simulation Section (Diferencial Competitivo) */}
       <section id="simulador" className="py-20 bg-slate-950 relative overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
@@ -640,9 +597,8 @@ export default function LandingPage({
                 </h2>
 
                 <p className="text-sm text-slate-300 leading-relaxed">
-                  Utilizamos ferramentas avançadas de visualização com Inteligência Artificial para aplicar
-                  as cores exatas (Suvinil, Coral e Sherwin-Williams) e efeitos de Cimento Queimado
-                  diretamente sobre as fotos dos seus cômodos.
+                  Você compara antes e depois, testa cores de mercado e entende como o acabamento vai
+                  ficar no ambiente antes de aprovar o orçamento.
                 </p>
 
                 {/* 3 Steps */}
@@ -668,7 +624,7 @@ export default function LandingPage({
                       3
                     </span>
                     <p className="text-xs font-bold text-white">Aprove sem Dúvidas</p>
-                    <p className="text-[11px] text-slate-400 mt-0.5">Compre a quantidade exata de latas e galões.</p>
+                    <p className="text-[11px] text-slate-400 mt-0.5">Receba a proposta com materiais, prazo e garantia.</p>
                   </div>
                 </div>
 
@@ -679,7 +635,7 @@ export default function LandingPage({
                     className="inline-flex items-center gap-2 px-6 py-3.5 rounded-2xl bg-sky-500 hover:bg-sky-400 text-white font-bold text-xs shadow-lg shadow-sky-500/30 transition active:scale-95"
                   >
                     <Sparkles className="w-4 h-4" />
-                    <span>Acessar o Laboratório de Simulação Visual</span>
+                    <span>Abrir Simulador Visual</span>
                   </button>
                 </div>
               </div>
@@ -746,7 +702,7 @@ export default function LandingPage({
                       setEstimateQuery(e.target.value);
                       setSearchError(null);
                     }}
-                    placeholder="Ex: ORC-2026-001 ou CPF"
+                    placeholder="Ex: ORC-2026-0043 ou CPF"
                     className="w-full pl-12 pr-4 py-3.5 text-sm rounded-2xl border border-slate-700 bg-slate-900 text-white placeholder-slate-500 focus:outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 font-mono"
                   />
                 </div>

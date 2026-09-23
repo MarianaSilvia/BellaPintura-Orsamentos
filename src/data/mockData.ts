@@ -135,7 +135,7 @@ export const initialEstimates: Estimate[] = [
     signatureImage: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="300" height="100"><path d="M20,60 Q80,10 140,55 T260,40" fill="none" stroke="%230284c7" stroke-width="3"/></svg>',
     signatureIp: '189.40.72.194',
     signatureSha256: 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
-    signedPdfCloudUrl: 'https://storage.tintaspro.cloud/vault/ORC-2026-0042-signed.pdf',
+    signedPdfCloudUrl: 'demo://bella-pintura/propostas/ORC-2026-0042-assinado.pdf',
     remindersSentCount: 1,
     lastReminderSentAt: '2026-09-21T10:00:00Z',
     environments: [

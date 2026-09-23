@@ -97,7 +97,7 @@ export const BeforeAfterSlider: React.FC<BeforeAfterSliderProps> = ({
         <div className="absolute inset-0 w-full h-full">
           <img
             src={simulatedImage}
-            alt="Simulação Visual IA"
+            alt="Simulação visual de acabamento"
             className="w-full h-full object-cover"
           />
           {/* Real-time Dynamic Color Overlay to match selected color palette */}
@@ -112,7 +112,7 @@ export const BeforeAfterSlider: React.FC<BeforeAfterSliderProps> = ({
           {/* Badge Simulated */}
           <div className="absolute top-4 right-4 z-10 flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-600/90 text-white text-xs font-semibold shadow-md backdrop-blur-md">
             <Sparkles className="w-3.5 h-3.5" />
-            <span>Simulação IA: {activeColor.name}</span>
+            <span>Simulação: {activeColor.name}</span>
           </div>
         </div>
 
@@ -157,7 +157,7 @@ export const BeforeAfterSlider: React.FC<BeforeAfterSliderProps> = ({
           <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
             <div className="flex items-center gap-2 text-sm font-semibold text-slate-700 dark:text-slate-300">
               <Palette className="w-4 h-4 text-sky-600" />
-              <span>Simular Paleta de Cores & Efeitos de Pintura:</span>
+              <span>Testar cores e efeitos de pintura:</span>
             </div>
 
             {/* Upload Custom Photo Option */}

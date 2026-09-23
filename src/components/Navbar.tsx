@@ -44,12 +44,12 @@ export const Navbar: React.FC = () => {
   const unreadCount = notifications.filter((n) => !n.read).length;
 
   const navItems: { label: string; view: AppView; icon: React.FC<{ className?: string }> }[] = [
-    { label: 'Vitrine Comercial', view: 'landing', icon: Globe },
+    { label: 'Vitrine', view: 'landing', icon: Globe },
     { label: 'Painel', view: 'dashboard', icon: LayoutDashboard },
     { label: 'Novo Orçamento', view: 'new-estimate', icon: PlusCircle },
     { label: 'Clientes', view: 'customers', icon: Users },
-    { label: 'Simulador IA', view: 'visual-ai', icon: Sparkles },
-    { label: 'Auditoria & Logs', view: 'audit', icon: ShieldCheck },
+    { label: 'Simulador', view: 'visual-ai', icon: Sparkles },
+    { label: 'Histórico', view: 'audit', icon: ShieldCheck },
     { label: 'Configurações', view: 'settings', icon: Settings },
   ];
 
@@ -60,7 +60,7 @@ export const Navbar: React.FC = () => {
         {/* Brand Logo & Name */}
         <div className="flex items-center gap-3">
           <button
-            onClick={() => setCurrentView('dashboard')}
+            onClick={() => setCurrentView('landing')}
             className="flex items-center gap-2.5 text-left group"
           >
             <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-sky-600 to-indigo-600 text-white flex items-center justify-center shadow-md shadow-sky-600/20 group-hover:scale-105 transition">
@@ -68,7 +68,7 @@ export const Navbar: React.FC = () => {
             </div>
             <div>
               <span className="font-black text-base tracking-tight text-slate-900 dark:text-white block">
-                Bella Pintura <span className="text-sky-600 text-xs font-bold uppercase tracking-wider">SaaS</span>
+                Bella Pintura
               </span>
               <span className="text-[10px] text-slate-400 font-medium block truncate max-w-[140px] sm:max-w-xs">
                 {currentCompany.tradeName || currentCompany.name}
@@ -117,7 +117,7 @@ export const Navbar: React.FC = () => {
             {isTenantOpen && (
               <div className="absolute right-0 mt-2 w-64 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl p-2 z-50">
                 <span className="text-[10px] uppercase font-bold text-slate-400 px-3 py-1 block">
-                  Empresas do SaaS
+                  Empresas da demonstração
                 </span>
                 {companies.map((c) => (
                   <button
@@ -159,7 +159,7 @@ export const Navbar: React.FC = () => {
             title="Exportar Relatórios CSV (Orçamentos, Materiais e Clientes)"
           >
             <FileSpreadsheet className="w-4 h-4" />
-            <span className="hidden xl:inline text-xs font-bold">Exportar CSV</span>
+              <span className="hidden xl:inline text-xs font-bold">Exportar</span>
           </button>
 
           {/* Dark Mode Toggle */}
@@ -176,7 +176,7 @@ export const Navbar: React.FC = () => {
             <button
               onClick={() => setIsNotifOpen(!isNotifOpen)}
               className="relative p-2 rounded-xl text-slate-500 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition"
-              title="Notificações em Tempo Real"
+              title="Notificações da demonstração"
             >
               <Bell className="w-4 h-4" />
               {unreadCount > 0 && (
@@ -188,7 +188,7 @@ export const Navbar: React.FC = () => {
               <div className="absolute right-0 mt-2 w-80 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl p-3 z-50 space-y-2">
                 <div className="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-800">
                   <span className="text-xs font-bold text-slate-900 dark:text-white">
-                    Notificações do SaaS
+                    Notificações da demo
                   </span>
                   <div className="flex items-center gap-2">
                     {unreadCount > 0 && (

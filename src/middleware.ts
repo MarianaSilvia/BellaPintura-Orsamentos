@@ -1,5 +1,5 @@
 /**
- * Next.js Edge Middleware for Multi-Tenant SaaS
+ * Rascunho futuro de middleware para uma versão com autenticação e rotas protegidas.
  * Protects /dashboard and /estimates routes ensuring valid tenant session
  * Path: src/middleware.ts
  */

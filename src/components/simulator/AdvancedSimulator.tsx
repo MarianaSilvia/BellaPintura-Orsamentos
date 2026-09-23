@@ -115,6 +115,7 @@ export const AdvancedSimulator: React.FC<AdvancedSimulatorProps> = ({
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
   const [saveSuccess, setSaveSuccess] = useState<boolean>(false);
   const [isPainting, setIsPainting] = useState<boolean>(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
 
   // Canvas Refs
   const containerRef = useRef<HTMLDivElement>(null);
@@ -293,7 +294,7 @@ export const AdvancedSimulator: React.FC<AdvancedSimulatorProps> = ({
     simCtx.fillStyle = 'rgba(255, 255, 255, 0.75)';
     simCtx.font = 'bold 15px sans-serif';
     simCtx.textAlign = 'right';
-    simCtx.fillText('Bela Pintura LTDA • Simulação Inteligente', width - 20, height - 20);
+    simCtx.fillText('Bella Pintura LTDA • Simulação Visual', width - 20, height - 20);
     simCtx.restore();
   }, [selectedColor, selectedFinish, lighting, colorOpacity]);
 
@@ -384,10 +385,11 @@ export const AdvancedSimulator: React.FC<AdvancedSimulatorProps> = ({
     if (!file) return;
 
     if (!file.type.startsWith('image/')) {
-      alert('Selecione uma imagem válida (JPG, PNG ou WebP).');
+      setUploadError('Selecione uma imagem válida em JPG, PNG ou WebP.');
       return;
     }
 
+    setUploadError(null);
     const reader = new FileReader();
     reader.onload = (event) => {
       const res = event.target?.result as string;
@@ -559,7 +561,7 @@ export const AdvancedSimulator: React.FC<AdvancedSimulatorProps> = ({
         <div>
           <div className="flex items-center gap-2 text-sky-400 text-xs font-bold uppercase tracking-wider mb-1">
             <Sparkles className="w-4 h-4" />
-            <span>Simulador Visual Avançado • Bela Pintura LTDA</span>
+            <span>Simulador Visual • Bella Pintura LTDA</span>
           </div>
           <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight">
             Colorização Real com Pincel de Precisão &amp; Iluminação
@@ -599,6 +601,12 @@ export const AdvancedSimulator: React.FC<AdvancedSimulatorProps> = ({
           </button>
         </div>
       </div>
+
+      {uploadError && (
+        <div className="rounded-2xl border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-xs font-semibold text-amber-100">
+          {uploadError}
+        </div>
+      )}
 
       {/* Preset Ambientes Rápidos */}
       <div className="flex items-center gap-2 overflow-x-auto pb-1 text-xs">
@@ -940,7 +948,7 @@ export const AdvancedSimulator: React.FC<AdvancedSimulatorProps> = ({
           <ShieldCheck className="w-5 h-5 text-emerald-400 shrink-0" />
           <span>
             Simulação protegida com precisão cromática. Ao anexar, a proposta da{' '}
-            <strong className="text-white">Bela Pintura LTDA</strong> incluirá os códigos de tinta e acabamentos escolhidos.
+            <strong className="text-white">Bella Pintura LTDA</strong> incluirá os códigos de tinta e acabamentos escolhidos.
           </span>
         </div>
 

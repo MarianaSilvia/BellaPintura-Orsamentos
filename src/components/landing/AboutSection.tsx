@@ -61,8 +61,8 @@ export const AboutSection: React.FC<AboutSectionProps> = ({
       title: 'Gestão Digital de Obras',
       badge: 'Inovação & Transparência',
       description:
-        'A tradição dos mestres de obra aliada à tecnologia: simulação visual de cores por IA, cálculo preciso de latas sem desperdício e propostas digitais com assinatura jurídica.',
-      features: ['Simulação de fotos com IA', 'Cálculo exato de materiais', 'Contratos assinados online'],
+        'A tradição dos mestres de obra aliada à tecnologia: simulação visual de cores, cálculo preciso de latas sem desperdício e propostas digitais com assinatura jurídica.',
+      features: ['Simulação visual de fotos', 'Cálculo exato de materiais', 'Contratos assinados online'],
       gradient: 'from-indigo-600 to-purple-700',
     },
   ];
@@ -121,7 +121,7 @@ export const AboutSection: React.FC<AboutSectionProps> = ({
 
           <p className="text-sm sm:text-base text-slate-300 mt-5 leading-relaxed">
             Fundada com os princípios do respeito, da palavra cumprida e do primor em cada demão de tinta,
-            a <strong className="text-white font-bold">Bela Pintura LTDA</strong> une mais de três décadas de
+            a <strong className="text-white font-bold">Bella Pintura LTDA</strong> une mais de três décadas de
             mestria artesanal à mais moderna tecnologia em pintura, instalações elétricas e reformas completas.
           </p>
         </div>
@@ -149,7 +149,7 @@ export const AboutSection: React.FC<AboutSectionProps> = ({
 
               <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
                 Hoje, somos referência porque combinamos o valor sagrado da <strong>confiança familiar</strong> com
-                as ferramentas mais inovadoras da engenharia moderna: simulador 3D de cores por foto com IA,
+                as ferramentas mais inovadoras da engenharia moderna: simulador visual de cores por foto,
                 orçamentos técnicos auditáveis e equipes treinadas para entregar obras limpas e no prazo acordado.
               </p>
 
@@ -177,7 +177,7 @@ export const AboutSection: React.FC<AboutSectionProps> = ({
               <div className="relative rounded-2xl overflow-hidden border-2 border-slate-700 shadow-2xl">
                 <img
                   src="https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=800&auto=format&fit=crop&q=80"
-                  alt="Mestres de pintura e reforma da Bela Pintura"
+                  alt="Mestres de pintura e reforma da Bella Pintura"
                   className="w-full h-80 object-cover"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent flex flex-col justify-end p-6">
@@ -193,7 +193,7 @@ export const AboutSection: React.FC<AboutSectionProps> = ({
                     "O nosso maior patrimônio é a palavra que mantemos com cada cliente."
                   </h4>
                   <p className="text-[11px] text-amber-300/90 font-medium mt-1">
-                    Diretoria &amp; Mestres da Bela Pintura LTDA
+                    Diretoria &amp; Mestres da Bella Pintura LTDA
                   </p>
                 </div>
               </div>

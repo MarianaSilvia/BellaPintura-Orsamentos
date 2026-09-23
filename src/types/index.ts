@@ -78,7 +78,7 @@ export interface EnvironmentItem {
 
 export interface Estimate {
   id: string;
-  code: string; // Ex: ORC-2026-001
+  code: string; // Ex: ORC-2026-0043
   companyId: string;
   customerId: string;
   userId: string;

@@ -132,6 +132,7 @@ export const WallSimulator: React.FC<WallSimulatorProps> = ({
   const [saveSuccess, setSaveSuccess] = useState<boolean>(false);
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
   const [currentRoomName, setCurrentRoomName] = useState<string>(roomName);
+  const [uploadError, setUploadError] = useState<string | null>(null);
 
   // Settings per Zone
   const [zoneConfig, setZoneConfig] = useState<Record<SimulationZone, ZoneSettings>>({
@@ -280,7 +281,7 @@ export const WallSimulator: React.FC<WallSimulatorProps> = ({
     simCtx.fillStyle = 'rgba(255, 255, 255, 0.7)';
     simCtx.font = 'bold 16px sans-serif';
     simCtx.textAlign = 'right';
-    simCtx.fillText('Bela Pintura LTDA • Simulação Inteligente', width - 20, height - 20);
+    simCtx.fillText('Bella Pintura LTDA • Simulação Visual', width - 20, height - 20);
     simCtx.restore();
   }, [zoneConfig]);
 
@@ -381,10 +382,11 @@ export const WallSimulator: React.FC<WallSimulatorProps> = ({
     if (!file) return;
 
     if (!file.type.startsWith('image/')) {
-      alert('Por favor, selecione uma imagem válida (JPG ou PNG).');
+      setUploadError('Selecione uma imagem válida em JPG, PNG ou WebP.');
       return;
     }
 
+    setUploadError(null);
     const reader = new FileReader();
     reader.onload = (event) => {
       const result = event.target?.result as string;
@@ -552,6 +554,12 @@ export const WallSimulator: React.FC<WallSimulatorProps> = ({
           </button>
         </div>
       </div>
+
+      {uploadError && (
+        <div className="rounded-2xl border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-xs font-semibold text-amber-100">
+          {uploadError}
+        </div>
+      )}
 
       {/* Preset Rooms Selector */}
       <div className="flex items-center gap-2 overflow-x-auto pb-1 text-xs">
@@ -818,7 +826,7 @@ export const WallSimulator: React.FC<WallSimulatorProps> = ({
           <ShieldCheck className="w-5 h-5 text-emerald-400 shrink-0" />
           <span>
             Simulação protegida com precisão cromática. Ao salvar, a imagem é anexada à proposta técnica da{' '}
-            <strong className="text-white">Bela Pintura LTDA</strong>.
+            <strong className="text-white">Bella Pintura LTDA</strong>.
           </span>
         </div>
 

@@ -40,6 +40,11 @@ export const PublicClientProposalView: React.FC = () => {
 
   const estimate = estimates.find((e) => e.id === selectedEstimateId) || estimates[0];
   const customer = customers.find((c) => c.id === estimate?.customerId);
+  const clientGreetingName = customer?.name
+    ?.replace(/^(dr\.?|dra\.?)\s+/i, '')
+    .trim()
+    .split(/\s+/)[0];
+  const proposalGreeting = clientGreetingName ? `Olá, ${clientGreetingName}.` : 'Olá.';
 
   if (!estimate) {
     return (
@@ -61,10 +66,10 @@ export const PublicClientProposalView: React.FC = () => {
 
   const handleShareWhatsApp = () => {
     const text = encodeURIComponent(
-      `Olá! Segue a proposta técnica de pintura da ${currentCompany.name} para o projeto ${estimate.title}.\n` +
+      `Olá! A ${currentCompany.tradeName || currentCompany.name} preparou sua proposta de pintura para ${estimate.title}.\n` +
       `Código: ${estimate.code}\n` +
       `Valor: R$ ${estimate.finalTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}\n` +
-      `Acesse para visualizar a simulação e assinar: ${window.location.origin}/#public-view-${estimate.id}`
+      `Acesse para ver os ambientes, a simulação visual e aprovar online: ${window.location.origin}/#public-view-${estimate.id}`
     );
     window.open(`https://wa.me/?text=${text}`, '_blank');
   };
@@ -87,7 +92,7 @@ export const PublicClientProposalView: React.FC = () => {
         <div className="flex items-center gap-2">
           <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
           <span className="text-slate-300">
-            Visualização Pública do Cliente (Link Único: <span className="font-mono text-sky-400">/view/{estimate.id}</span>)
+            Modo demonstração: esta é a visão que o cliente recebe para revisar e aprovar a proposta.
           </span>
         </div>
         <div className="flex items-center gap-3">
@@ -103,7 +108,7 @@ export const PublicClientProposalView: React.FC = () => {
             className="flex items-center gap-1 text-sky-400 hover:text-sky-300 font-medium transition"
           >
             <FileDown className="w-3.5 h-3.5" />
-            <span>Ver PDF Comercial</span>
+            <span>Ver versão para impressão</span>
           </button>
         </div>
       </div>
@@ -129,7 +134,7 @@ export const PublicClientProposalView: React.FC = () => {
                   {currentCompany.name}
                 </h1>
                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                  CNPJ: {currentCompany.cnpj} • {currentCompany.city}/{currentCompany.state}
+                  Pintura fina, reforma e acabamentos • {currentCompany.city}/{currentCompany.state}
                 </p>
                 <div className="flex items-center gap-2 mt-2">
                   <a
@@ -155,12 +160,12 @@ export const PublicClientProposalView: React.FC = () => {
             {/* Status Stamp */}
             <div className="flex flex-col sm:items-end">
               <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
-                Status da Proposta
+                Situação
               </span>
               {isApproved ? (
                 <div className="mt-1 inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-emerald-100 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-300 text-sm font-bold border border-emerald-300 dark:border-emerald-800 shadow-sm">
                   <ShieldCheck className="w-4 h-4 text-emerald-600" />
-                  <span>APROVADO & ASSINADO</span>
+                  <span>APROVADA E ASSINADA</span>
                 </div>
               ) : (
                 <div className="mt-1 inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-amber-100 dark:bg-amber-950/80 text-amber-700 dark:text-amber-300 text-sm font-bold border border-amber-300 dark:border-amber-800">
@@ -172,6 +177,14 @@ export const PublicClientProposalView: React.FC = () => {
                 Ref: {estimate.code}
               </span>
             </div>
+          </div>
+
+          <div className="pt-6">
+            <p className="text-sm sm:text-base text-slate-700 dark:text-slate-300 leading-relaxed">
+              {proposalGreeting} Preparamos uma proposta completa para
+              <strong className="text-slate-900 dark:text-white"> {estimate.title}</strong>, com ambientes, materiais,
+              prazo, garantia e simulação visual para você aprovar com tranquilidade.
+            </p>
           </div>
 
           {/* Project & Client Details */}
@@ -191,7 +204,7 @@ export const PublicClientProposalView: React.FC = () => {
               <p className="text-xs text-slate-500">{customer?.city}/{customer?.state}</p>
             </div>
             <div>
-              <span className="text-xs text-slate-400 font-medium block">Previsão de Execução</span>
+              <span className="text-xs text-slate-400 font-medium block">Prazo previsto</span>
               <p className="font-semibold text-sky-600 dark:text-sky-400 mt-0.5 flex items-center gap-1">
                 <Calendar className="w-3.5 h-3.5" />
                 <span>{estimate.estimatedDays} dias úteis</span>
@@ -207,10 +220,10 @@ export const PublicClientProposalView: React.FC = () => {
             <div>
               <h2 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
                 <Sparkles className="w-5 h-5 text-amber-500" />
-                <span>Simulação Visual de Acabamento & Cores</span>
+                <span>Antes e Depois do Acabamento</span>
               </h2>
               <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                Veja o efeito planejado da pintura na parede antes do início da obra
+                Compare o ambiente original com a proposta de cor e acabamento planejada.
               </p>
             </div>
           </div>
@@ -226,7 +239,7 @@ export const PublicClientProposalView: React.FC = () => {
         <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 shadow-sm border border-slate-200/80 dark:border-slate-800 space-y-4">
           <h2 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
             <Layers className="w-5 h-5 text-sky-600" />
-            <span>Detalhamento Técnico dos Ambientes ({estimate.environments.length})</span>
+            <span>O que está incluído ({estimate.environments.length} ambiente{estimate.environments.length > 1 ? 's' : ''})</span>
           </h2>
 
           <div className="space-y-4">
@@ -261,7 +274,7 @@ export const PublicClientProposalView: React.FC = () => {
                 {/* Specs Pills */}
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs pt-2">
                   <div className="p-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800">
-                    <span className="text-slate-400 block text-[10px]">Área Líquida</span>
+                    <span className="text-slate-400 block text-[10px]">Área de pintura</span>
                     <span className="font-bold text-slate-800 dark:text-slate-200">{env.netAreaM2} m²</span>
                   </div>
                   <div className="p-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800">
@@ -277,7 +290,7 @@ export const PublicClientProposalView: React.FC = () => {
                     </span>
                   </div>
                   <div className="p-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800">
-                    <span className="text-slate-400 block text-[10px]">Estimativa Tinta</span>
+                    <span className="text-slate-400 block text-[10px]">Tinta estimada</span>
                     <span className="font-bold text-sky-600 dark:text-sky-400">{env.paintLitersNeeded} Litros</span>
                   </div>
                 </div>
@@ -296,10 +309,10 @@ export const PublicClientProposalView: React.FC = () => {
         <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 shadow-sm border border-slate-200/80 dark:border-slate-800">
           <h2 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2 mb-2">
             <PaintBucket className="w-5 h-5 text-indigo-600" />
-            <span>Lista de Tintas e Embalagens Sugeridas</span>
+            <span>Materiais previstos</span>
           </h2>
           <p className="text-xs text-slate-500 dark:text-slate-400 mb-4">
-            Calculado pelo motor técnico para 2 demãos com 5% de margem para recortes e isolamento.
+            Quantidades estimadas para reduzir desperdício e evitar compras de última hora.
           </p>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -380,15 +393,15 @@ export const PublicClientProposalView: React.FC = () => {
           <div className="bg-gradient-to-br from-slate-900 to-slate-950 text-white rounded-3xl p-6 shadow-xl flex flex-col justify-between">
             <div>
               <span className="text-xs font-bold text-sky-400 uppercase tracking-wider block mb-1">
-                Investimento Total da Obra
+                Valor da Proposta
               </span>
               <div className="space-y-2 py-4 border-b border-slate-800 text-sm">
                 <div className="flex justify-between text-slate-300">
-                  <span>Mão de Obra Técnica Especializada:</span>
+                  <span>Mão de obra especializada:</span>
                   <span className="font-semibold">R$ {estimate.totalLabor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
                 </div>
                 <div className="flex justify-between text-slate-300">
-                  <span>Materiais & Tintas (Estimativa):</span>
+                  <span>Materiais e tintas:</span>
                   <span className="font-semibold">R$ {estimate.totalMaterial.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
                 </div>
                 {estimate.discountValue > 0 && (
@@ -401,7 +414,7 @@ export const PublicClientProposalView: React.FC = () => {
             </div>
 
             <div className="pt-4">
-              <span className="text-xs text-slate-400 block">Valor Final Aprovado</span>
+              <span className="text-xs text-slate-400 block">Total para aprovação</span>
               <div className="text-3xl sm:text-4xl font-black text-white tracking-tight mt-1">
                 R$ {estimate.finalTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
               </div>
@@ -424,7 +437,7 @@ export const PublicClientProposalView: React.FC = () => {
                     className="w-full py-4 px-6 rounded-2xl bg-sky-500 hover:bg-sky-400 text-white font-bold text-base shadow-lg shadow-sky-500/30 flex items-center justify-center gap-2 transition active:scale-[0.99]"
                   >
                     <CheckCircle className="w-5 h-5" />
-                    <span>Aprovar e Assinar na Tela</span>
+                    <span>Aprovar Proposta</span>
                   </button>
                 )}
 
