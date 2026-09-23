@@ -135,4 +135,5 @@ export interface NotificationItem {
   type: 'success' | 'info' | 'warning';
   timestamp: string;
   read: boolean;
+  estimateId?: string;
 }

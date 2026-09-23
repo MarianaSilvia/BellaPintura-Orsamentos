@@ -116,16 +116,15 @@ export const BeforeAfterSlider: React.FC<BeforeAfterSliderProps> = ({
           </div>
         </div>
 
-        {/* Layer 1: Original Wall (Clipped by slider position) */}
+        {/* Layer 1: Original Wall (Clipped by slider position via CSS clip-path) */}
         <div
-          className="absolute inset-0 overflow-hidden"
-          style={{ width: `${sliderPosition}%` }}
+          className="absolute inset-0 overflow-hidden pointer-events-none transition-[clip-path] duration-75"
+          style={{ clipPath: `inset(0 ${100 - sliderPosition}% 0 0)` }}
         >
           <img
             src={effectiveOriginal}
             alt="Parede Original"
-            className="absolute inset-0 w-full h-full object-cover max-w-none"
-            style={{ width: containerRef.current ? `${containerRef.current.clientWidth}px` : '100%' }}
+            className="w-full h-full object-cover"
           />
 
           {/* Badge Original */}

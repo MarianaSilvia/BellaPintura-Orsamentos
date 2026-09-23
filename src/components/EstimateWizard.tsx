@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
 import {
   Plus,
@@ -16,7 +16,8 @@ import {
   DollarSign,
   Palette,
   ShieldAlert,
-  ChevronDown
+  ChevronDown,
+  AlertTriangle
 } from 'lucide-react';
 import EstimationEngine, {
   SurfaceCondition,
@@ -53,11 +54,18 @@ export const EstimateWizard: React.FC = () => {
     addEstimate,
     addCustomer,
     setCurrentView,
-    openPublicProposal
+    openPublicProposal,
+    selectedCustomerIdForNewEstimate,
+    setSelectedCustomerIdForNewEstimate,
+    simulationPresetForNewEstimate,
+    setSimulationPresetForNewEstimate
   } = useApp();
 
   // Step 1: Customer & Basics
-  const [selectedCustomerId, setSelectedCustomerId] = useState<string>(customers[0]?.id || '');
+  const [selectedCustomerId, setSelectedCustomerId] = useState<string>(
+    selectedCustomerIdForNewEstimate || customers[0]?.id || ''
+  );
+  const [validationError, setValidationError] = useState<string | null>(null);
   const [isNewCustomerModal, setIsNewCustomerModal] = useState(false);
   const [newCustName, setNewCustName] = useState('');
   const [newCustPhone, setNewCustPhone] = useState('');
@@ -101,6 +109,34 @@ export const EstimateWizard: React.FC = () => {
       paintColorHex: '#94a3b8',
     }
   ]);
+
+  // Handle incoming presets from Customer or Simulation
+  useEffect(() => {
+    if (selectedCustomerIdForNewEstimate) {
+      setSelectedCustomerId(selectedCustomerIdForNewEstimate);
+      setSelectedCustomerIdForNewEstimate(null);
+    }
+  }, [selectedCustomerIdForNewEstimate, setSelectedCustomerIdForNewEstimate]);
+
+  useEffect(() => {
+    if (simulationPresetForNewEstimate) {
+      setEnvironments((prev) => {
+        const next = [...prev];
+        if (next.length > 0) {
+          next[0] = {
+            ...next[0],
+            name: simulationPresetForNewEstimate.roomName || next[0].name,
+            finishType: simulationPresetForNewEstimate.finishType,
+            paintColorName: simulationPresetForNewEstimate.colorName,
+            paintColorHex: simulationPresetForNewEstimate.colorHex,
+          };
+        }
+        return next;
+      });
+      setEstimateTitle(`Pintura Especial - ${simulationPresetForNewEstimate.colorName}`);
+      setSimulationPresetForNewEstimate(null);
+    }
+  }, [simulationPresetForNewEstimate, setSimulationPresetForNewEstimate]);
 
   // Real-time calculation with EstimationEngine
   const calculation = useMemo(() => {
@@ -168,9 +204,10 @@ export const EstimateWizard: React.FC = () => {
 
   const handleCreateEstimate = () => {
     if (!selectedCustomerId) {
-      alert('Por favor, selecione ou cadastre um cliente.');
+      setValidationError('Por favor, selecione ou cadastre um cliente antes de gerar a proposta comercial.');
       return;
     }
+    setValidationError(null);
 
     const nextCode = `ORC-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
 
@@ -249,6 +286,23 @@ export const EstimateWizard: React.FC = () => {
           </p>
         </div>
       </div>
+
+      {/* Validation Alert Banner */}
+      {validationError && (
+        <div className="p-4 rounded-2xl bg-rose-50 dark:bg-rose-950/80 border border-rose-200 dark:border-rose-800 text-rose-800 dark:text-rose-200 flex items-center justify-between gap-3 shadow-md">
+          <div className="flex items-center gap-2.5">
+            <AlertTriangle className="w-5 h-5 text-rose-600 dark:text-rose-400 shrink-0" />
+            <span className="text-xs sm:text-sm font-semibold">{validationError}</span>
+          </div>
+          <button
+            type="button"
+            onClick={() => setValidationError(null)}
+            className="text-xs underline font-bold px-2 py-1 rounded hover:bg-rose-100 dark:hover:bg-rose-900"
+          >
+            Fechar
+          </button>
+        </div>
+      )}
 
       {/* Block 1: Cliente e Informações da Obra */}
       <div className="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">

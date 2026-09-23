@@ -22,14 +22,15 @@ export const LiveSupportChat: React.FC = () => {
     },
   ]);
 
-  const handleSend = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!input.trim()) return;
+  const handleSend = (e?: React.FormEvent, customText?: string) => {
+    if (e) e.preventDefault();
+    const query = customText || input;
+    if (!query.trim()) return;
 
     const userMsg: ChatMessage = {
       id: Date.now().toString(),
       sender: 'user',
-      text: input,
+      text: query,
       time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
     };
 
@@ -39,12 +40,15 @@ export const LiveSupportChat: React.FC = () => {
     // Automatic intelligent response
     setTimeout(() => {
       let reply = 'Entendido! Nossa equipe técnica está analisando a medição dos ambientes e as regras de diluição de tintas para apoiar seu projeto.';
-      if (input.toLowerCase().includes('cimento') || input.toLowerCase().includes('queimado')) {
+      const lower = query.toLowerCase();
+      if (lower.includes('cimento') || lower.includes('queimado')) {
         reply = 'Para Cimento Queimado, nosso motor técnico sugere aplicar fundo selador acrílico e duas demãos com desempenadeira de cantos arredondados, calculando o adicional de mão de obra automaticamente.';
-      } else if (input.toLowerCase().includes('assinatura') || input.toLowerCase().includes('aprovar')) {
+      } else if (lower.includes('assinatura') || lower.includes('aprovar')) {
         reply = 'O link único do cliente permite assinatura digital na tela com hash SHA-256 e emissão instantânea de comprovante com valor legal!';
-      } else if (input.toLowerCase().includes('whatsapp')) {
-        reply = 'Você pode enviar propostas com um clique via WhatsApp direto da tabela do painel geral!';
+      } else if (lower.includes('whatsapp')) {
+        reply = 'Você pode enviar propostas com um clique via WhatsApp direto da tabela do painel geral ou pelo botão verde no portal do cliente!';
+      } else if (lower.includes('lata') || lower.includes('galão') || lower.includes('calcular')) {
+        reply = 'O cálculo técnico considera 1L para cada 5m² por demão (total 2 demãos). Latas de 18L cobrem ~45m², galões de 3.6L cobrem ~9m² e quartos de 0.9L cobrem ~2.25m².';
       }
 
       setMessages((prev) => [
@@ -56,7 +60,7 @@ export const LiveSupportChat: React.FC = () => {
           time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         },
       ]);
-    }, 800);
+    }, 600);
   };
 
   return (
@@ -84,7 +88,7 @@ export const LiveSupportChat: React.FC = () => {
                 <Sparkles className="w-4 h-4 text-white" />
               </div>
               <div>
-                <h3 className="text-xs font-bold">Suporte Especialista TintasPro</h3>
+                <h3 className="text-xs font-bold">Suporte Especialista {currentCompany.tradeName || currentCompany.name}</h3>
                 <p className="text-[10px] text-sky-100 flex items-center gap-1">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-300" />
                   <span>Atendimento online agora</span>
@@ -95,8 +99,34 @@ export const LiveSupportChat: React.FC = () => {
             <button
               onClick={() => setIsOpen(false)}
               className="p-1 rounded-lg hover:bg-white/10 transition"
+              title="Fechar suporte"
             >
               <X className="w-4 h-4" />
+            </button>
+          </div>
+
+          {/* Quick FAQ Chips */}
+          <div className="px-3 py-2 bg-slate-100/90 dark:bg-slate-800/80 border-b border-slate-200 dark:border-slate-700/60 flex items-center gap-1.5 overflow-x-auto text-[11px] whitespace-nowrap">
+            <button
+              type="button"
+              onClick={() => handleSend(undefined, 'Como calcular latas e galões para 2 demãos?')}
+              className="px-2.5 py-1 rounded-lg bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-600 hover:bg-sky-50 dark:hover:bg-slate-600 font-medium transition"
+            >
+              🎨 Cálculo de Latas
+            </button>
+            <button
+              type="button"
+              onClick={() => handleSend(undefined, 'Como funciona a assinatura digital com validade legal?')}
+              className="px-2.5 py-1 rounded-lg bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-600 hover:bg-sky-50 dark:hover:bg-slate-600 font-medium transition"
+            >
+              ✍️ Assinatura Digital
+            </button>
+            <button
+              type="button"
+              onClick={() => handleSend(undefined, 'Como enviar proposta por WhatsApp?')}
+              className="px-2.5 py-1 rounded-lg bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-600 hover:bg-sky-50 dark:hover:bg-slate-600 font-medium transition"
+            >
+              📱 Envio WhatsApp
             </button>
           </div>
 
@@ -111,7 +141,7 @@ export const LiveSupportChat: React.FC = () => {
               >
                 {m.sender === 'support' && (
                   <div className="w-6 h-6 rounded-full bg-sky-100 dark:bg-sky-950 text-sky-600 flex items-center justify-center shrink-0 text-[10px] font-bold">
-                    TP
+                    BP
                   </div>
                 )}
                 <div

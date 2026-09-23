@@ -15,11 +15,12 @@ import VisualAiLab from './components/VisualAiLab';
 import AuditLogView from './components/AuditLogView';
 import SettingsView from './components/SettingsView';
 import LiveSupportChat from './components/LiveSupportChat';
+import LandingPage from './app/page';
 
 const MainLayout: React.FC = () => {
   const { currentView, setCurrentView, setSelectedEstimateId } = useApp();
 
-  // Handle URL hash changes (for direct links like /#public-view-est_001)
+  // Handle URL hash changes (for direct links like /#public-view-est_001, /#landing)
   useEffect(() => {
     const handleHash = () => {
       const hash = window.location.hash;
@@ -31,6 +32,12 @@ const MainLayout: React.FC = () => {
         const estId = hash.replace('#pdf-', '');
         setSelectedEstimateId(estId);
         setCurrentView('commercial-pdf');
+      } else if (hash === '#landing' || hash === '#home') {
+        setCurrentView('landing');
+      } else if (hash === '#visual-ai') {
+        setCurrentView('visual-ai');
+      } else if (hash === '#dashboard') {
+        setCurrentView('dashboard');
       }
     };
 
@@ -41,10 +48,21 @@ const MainLayout: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col transition-colors duration-200">
-      {/* Hide Navbar on clean Public View and PDF view for distraction-free client experience */}
-      {currentView !== 'public-view' && currentView !== 'commercial-pdf' && <Navbar />}
+      {/* Hide Dashboard Navbar on Landing Page, Public View and PDF view */}
+      {currentView !== 'landing' && currentView !== 'public-view' && currentView !== 'commercial-pdf' && <Navbar />}
 
       <main className="flex-1">
+        {currentView === 'landing' && (
+          <LandingPage
+            onAccessDashboard={() => setCurrentView('dashboard')}
+            onOpenEstimate={(estId) => {
+              setSelectedEstimateId(estId);
+              setCurrentView('public-view');
+            }}
+            onRequestQuote={() => setCurrentView('new-estimate')}
+            onOpenVisualAi={() => setCurrentView('visual-ai')}
+          />
+        )}
         {currentView === 'dashboard' && <DashboardView />}
         {currentView === 'new-estimate' && <EstimateWizard />}
         {currentView === 'public-view' && <PublicClientProposalView />}

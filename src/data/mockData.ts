@@ -3,10 +3,10 @@ import { Company, User, Customer, Estimate, AuditLog } from '../types';
 export const initialCompanies: Company[] = [
   {
     id: 'comp_elite',
-    name: 'Pinturas & Reformas Elite',
-    tradeName: 'Elite Pinturas Finas',
+    name: 'Bella Pintura & Reformas Finas',
+    tradeName: 'Bella Pintura',
     cnpj: '38.412.981/0001-44',
-    email: 'contato@elitepinturas.com.br',
+    email: 'contato@bellapintura.com.br',
     phone: '(11) 98765-4321',
     whatsapp: '5511987654321',
     address: 'Av. Paulista, 1578 - Conj 102',

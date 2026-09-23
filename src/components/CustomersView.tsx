@@ -12,18 +12,37 @@ import {
   Calendar,
   FileSpreadsheet,
   TrendingUp,
-  DollarSign
+  DollarSign,
+  Edit3,
+  Trash2,
+  PlusCircle,
+  AlertTriangle
 } from 'lucide-react';
 import { Customer } from '../types';
 import { ExportDataModal } from './ExportDataModal';
 
 export const CustomersView: React.FC = () => {
-  const { customers, currentCompany, estimates, addCustomer, openPublicProposal } = useApp();
+  const {
+    customers,
+    currentCompany,
+    estimates,
+    addCustomer,
+    updateCustomer,
+    deleteCustomer,
+    openPublicProposal,
+    startNewEstimateForCustomer
+  } = useApp();
   const [searchTerm, setSearchTerm] = useState('');
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
 
-  // Form states
+  // Edit customer modal state
+  const [editingCustomer, setEditingCustomer] = useState<Customer | null>(null);
+
+  // Delete customer confirmation state
+  const [deletingCustomer, setDeletingCustomer] = useState<Customer | null>(null);
+
+  // Form states for Add/Edit
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
@@ -34,6 +53,19 @@ export const CustomersView: React.FC = () => {
   const [notes, setNotes] = useState('');
 
   const companyCustomers = customers.filter((c) => c.companyId === currentCompany.id);
+
+  // Open edit modal pre-filled
+  const openEditModal = (c: Customer) => {
+    setEditingCustomer(c);
+    setName(c.name);
+    setPhone(c.phone);
+    setEmail(c.email);
+    setDocument(c.document || '');
+    setAddress(c.address || '');
+    setCity(c.city || currentCompany.city || '');
+    setState(c.state || currentCompany.state || '');
+    setNotes(c.notes || '');
+  };
 
   // Métricas agregadas da base de clientes para tomada de decisão
   const customerMetrics = useMemo(() => {
@@ -60,28 +92,49 @@ export const CustomersView: React.FC = () => {
     e.preventDefault();
     if (!name.trim() || !phone.trim()) return;
 
-    const newCustomer: Customer = {
-      id: 'cust_' + Date.now(),
-      name,
-      phone,
-      email: email || `${name.toLowerCase().replace(/\s+/g, '')}@email.com`,
-      document,
-      address,
-      city,
-      state,
-      notes,
-      companyId: currentCompany.id,
-      createdAt: new Date().toISOString(),
-    };
+    if (editingCustomer) {
+      updateCustomer({
+        ...editingCustomer,
+        name,
+        phone,
+        email: email || `${name.toLowerCase().replace(/\s+/g, '')}@email.com`,
+        document,
+        address,
+        city,
+        state,
+        notes,
+      });
+      setEditingCustomer(null);
+    } else {
+      const newCustomer: Customer = {
+        id: 'cust_' + Date.now(),
+        name,
+        phone,
+        email: email || `${name.toLowerCase().replace(/\s+/g, '')}@email.com`,
+        document,
+        address,
+        city,
+        state,
+        notes,
+        companyId: currentCompany.id,
+        createdAt: new Date().toISOString(),
+      };
+      addCustomer(newCustomer);
+      setIsAddModalOpen(false);
+    }
 
-    addCustomer(newCustomer);
-    setIsAddModalOpen(false);
     setName('');
     setPhone('');
     setEmail('');
     setDocument('');
     setAddress('');
     setNotes('');
+  };
+
+  const handleConfirmDelete = () => {
+    if (!deletingCustomer) return;
+    deleteCustomer(deletingCustomer.id);
+    setDeletingCustomer(null);
   };
 
   return (
@@ -237,17 +290,47 @@ export const CustomersView: React.FC = () => {
                   </div>
                 )}
               </div>
+
+              {/* Action Buttons: New Estimate, Edit, Delete */}
+              <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-2">
+                <button
+                  onClick={() => startNewEstimateForCustomer(customer.id)}
+                  className="flex-1 py-1.5 px-3 rounded-xl bg-sky-50 dark:bg-sky-950/60 hover:bg-sky-100 dark:hover:bg-sky-900/60 text-sky-700 dark:text-sky-300 text-xs font-bold flex items-center justify-center gap-1.5 transition active:scale-95"
+                  title="Criar novo orçamento técnico para este cliente"
+                >
+                  <PlusCircle className="w-3.5 h-3.5" />
+                  <span>+ Orçar</span>
+                </button>
+
+                <div className="flex items-center gap-1">
+                  <button
+                    onClick={() => openEditModal(customer)}
+                    className="p-1.5 rounded-xl text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+                    title="Editar dados do cliente"
+                  >
+                    <Edit3 className="w-4 h-4" />
+                  </button>
+
+                  <button
+                    onClick={() => setDeletingCustomer(customer)}
+                    className="p-1.5 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition"
+                    title="Remover cliente"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
             </div>
           );
         })}
       </div>
 
-      {/* Modal Add Customer */}
-      {isAddModalOpen && (
+      {/* Modal Add / Edit Customer */}
+      {(isAddModalOpen || editingCustomer) && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm">
           <div className="w-full max-w-lg bg-white dark:bg-slate-900 rounded-3xl p-6 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-4">
             <h3 className="text-base font-bold text-slate-900 dark:text-white">
-              Cadastrar Novo Cliente
+              {editingCustomer ? 'Editar Dados do Cliente' : 'Cadastrar Novo Cliente'}
             </h3>
 
             <form onSubmit={handleCreateCustomer} className="space-y-3">
@@ -329,7 +412,10 @@ export const CustomersView: React.FC = () => {
               <div className="flex justify-end gap-2 pt-2">
                 <button
                   type="button"
-                  onClick={() => setIsAddModalOpen(false)}
+                  onClick={() => {
+                    setIsAddModalOpen(false);
+                    setEditingCustomer(null);
+                  }}
                   className="px-4 py-2 text-xs font-semibold text-slate-500 hover:bg-slate-100 rounded-xl"
                 >
                   Cancelar
@@ -338,10 +424,45 @@ export const CustomersView: React.FC = () => {
                   type="submit"
                   className="px-5 py-2 text-xs font-semibold bg-sky-600 hover:bg-sky-500 text-white rounded-xl shadow-md"
                 >
-                  Salvar Cliente
+                  {editingCustomer ? 'Atualizar Cliente' : 'Salvar Cliente'}
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {deletingCustomer && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm">
+          <div className="w-full max-w-sm bg-white dark:bg-slate-900 rounded-3xl p-6 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-4">
+            <div className="w-12 h-12 rounded-2xl bg-rose-100 dark:bg-rose-950 text-rose-600 flex items-center justify-center mx-auto">
+              <AlertTriangle className="w-6 h-6" />
+            </div>
+            <div className="text-center space-y-1">
+              <h3 className="text-base font-bold text-slate-900 dark:text-white">
+                Excluir Cliente?
+              </h3>
+              <p className="text-xs text-slate-500">
+                Tem certeza que deseja remover <strong>{deletingCustomer.name}</strong> da sua base de clientes?
+              </p>
+            </div>
+            <div className="flex gap-2 pt-2">
+              <button
+                type="button"
+                onClick={() => setDeletingCustomer(null)}
+                className="flex-1 py-2.5 text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl"
+              >
+                Cancelar
+              </button>
+              <button
+                type="button"
+                onClick={handleConfirmDelete}
+                className="flex-1 py-2.5 text-xs font-semibold bg-rose-600 hover:bg-rose-500 text-white rounded-xl shadow-md"
+              >
+                Confirmar Exclusão
+              </button>
+            </div>
           </div>
         </div>
       )}

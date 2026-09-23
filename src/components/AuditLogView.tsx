@@ -36,6 +36,35 @@ export const AuditLogView: React.FC = () => {
         </div>
 
         <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => {
+              const csvContent =
+                'data:text/csv;charset=utf-8,' +
+                encodeURIComponent(
+                  ['Data e Hora,Usuário,Ação,Detalhes,IP']
+                    .concat(
+                      filtered.map(
+                        (l) =>
+                          `"${new Date(l.timestamp).toLocaleString('pt-BR')}","${l.userName}","${l.action}","${l.details.replace(/"/g, '""')}","${l.ipAddress}"`
+                      )
+                    )
+                    .join('\n')
+                );
+              const link = document.createElement('a');
+              link.setAttribute('href', csvContent);
+              link.setAttribute('download', `trilha-auditoria-${currentCompany.name.toLowerCase().replace(/\s+/g, '-')}.csv`);
+              document.body.appendChild(link);
+              link.click();
+              document.body.removeChild(link);
+            }}
+            className="px-3.5 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold border border-slate-300 dark:border-slate-700 flex items-center gap-1.5 transition active:scale-95"
+            title="Exportar trilha de auditoria para planilha"
+          >
+            <Download className="w-3.5 h-3.5 text-slate-500" />
+            <span>Exportar Logs (CSV)</span>
+          </button>
+
           <div className="px-3.5 py-1.5 rounded-full bg-emerald-50 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-300 text-xs font-bold border border-emerald-300 dark:border-emerald-800 flex items-center gap-1.5">
             <Lock className="w-3.5 h-3.5 text-emerald-600" />
             <span>Criptografia SHA-256 Ativa</span>

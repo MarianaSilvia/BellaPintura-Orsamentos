@@ -4,6 +4,7 @@ import { initialCompanies, initialUsers, initialCustomers, initialEstimates, ini
 import { translations, getTranslation } from '../data/translations';
 
 export type AppView =
+  | 'landing'
   | 'dashboard'
   | 'new-estimate'
   | 'edit-estimate'
@@ -43,9 +44,29 @@ interface AppContextType {
   isDarkMode: boolean;
   toggleDarkMode: () => void;
 
+  // New Estimate Wizard Bridge
+  selectedCustomerIdForNewEstimate: string | null;
+  setSelectedCustomerIdForNewEstimate: (id: string | null) => void;
+  simulationPresetForNewEstimate: {
+    finishType: any;
+    colorName: string;
+    colorHex: string;
+    roomName?: string;
+  } | null;
+  setSimulationPresetForNewEstimate: (preset: any) => void;
+  startNewEstimateForCustomer: (customerId: string) => void;
+  startNewEstimateFromSimulation: (
+    finishType: any,
+    colorName: string,
+    colorHex: string,
+    roomName?: string
+  ) => void;
+
   // Actions
   addEstimate: (estimate: Estimate) => void;
   updateEstimate: (estimate: Estimate) => void;
+  updateEstimateStatus: (estimateId: string, status: any) => void;
+  duplicateEstimate: (estimateId: string) => void;
   deleteEstimate: (id: string) => void;
   signEstimate: (
     estimateId: string,
@@ -54,8 +75,11 @@ interface AppContextType {
     signatureImage: string
   ) => Promise<{ success: boolean; hash: string }>;
   addCustomer: (customer: Customer) => void;
+  updateCustomer: (customer: Customer) => void;
+  deleteCustomer: (customerId: string) => void;
   addAuditLog: (action: string, details: string, estimateId?: string) => void;
   markNotificationAsRead: (id: string) => void;
+  markAllNotificationsAsRead: () => void;
   openPublicProposal: (estimateId: string) => void;
   openPdfView: (estimateId: string) => void;
   updateCompanySettings: (updated: Partial<Company>) => void;
@@ -111,6 +135,13 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const [currentView, setCurrentView] = useState<AppView>('dashboard');
   const [selectedEstimateId, setSelectedEstimateId] = useState<string | null>('est_001');
+  const [selectedCustomerIdForNewEstimate, setSelectedCustomerIdForNewEstimate] = useState<string | null>(null);
+  const [simulationPresetForNewEstimate, setSimulationPresetForNewEstimate] = useState<{
+    finishType: any;
+    colorName: string;
+    colorHex: string;
+    roomName?: string;
+  } | null>(null);
   const [language, setLanguage] = useState<Language>('pt');
   const [isDarkMode, setIsDarkMode] = useState<boolean>(() => {
     return localStorage.getItem('tintaspro_theme') === 'dark';
@@ -273,8 +304,87 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     addAuditLog('CUSTOMER_CREATED', `Novo cliente cadastrado: ${customer.name}`);
   };
 
+  const updateCustomer = (customer: Customer) => {
+    setCustomers((prev) => prev.map((c) => (c.id === customer.id ? customer : c)));
+    addAuditLog('CUSTOMER_UPDATED', `Cadastro do cliente ${customer.name} atualizado.`);
+  };
+
+  const deleteCustomer = (customerId: string) => {
+    const cust = customers.find((c) => c.id === customerId);
+    setCustomers((prev) => prev.filter((c) => c.id !== customerId));
+    addAuditLog('CUSTOMER_DELETED', `Cliente removido: ${cust?.name || customerId}`);
+  };
+
+  const updateEstimateStatus = (estimateId: string, status: any) => {
+    setEstimates((prev) =>
+      prev.map((e) =>
+        e.id === estimateId
+          ? {
+              ...e,
+              status,
+              updatedAt: new Date().toISOString(),
+            }
+          : e
+      )
+    );
+    addAuditLog('ESTIMATE_STATUS_UPDATED', `Status do orçamento ${estimateId} alterado para ${status}.`, estimateId);
+  };
+
+  const duplicateEstimate = (estimateId: string) => {
+    const original = estimates.find((e) => e.id === estimateId);
+    if (!original) return;
+
+    const copyCode = `ORC-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
+    const duplicated: Estimate = {
+      ...original,
+      id: 'est_' + Date.now(),
+      code: copyCode,
+      title: `${original.title} (Cópia)`,
+      status: 'DRAFT',
+      signedAt: undefined,
+      signedByName: undefined,
+      signedByDocument: undefined,
+      signatureImage: undefined,
+      signatureIp: undefined,
+      signatureSha256: undefined,
+      remindersSentCount: 0,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      environments: original.environments.map((env, idx) => ({
+        ...env,
+        id: 'env_' + Date.now() + '_' + idx,
+      })),
+    };
+
+    addEstimate(duplicated);
+  };
+
+  const startNewEstimateForCustomer = (customerId: string) => {
+    setSelectedCustomerIdForNewEstimate(customerId);
+    setCurrentView('new-estimate');
+  };
+
+  const startNewEstimateFromSimulation = (
+    finishType: any,
+    colorName: string,
+    colorHex: string,
+    roomName?: string
+  ) => {
+    setSimulationPresetForNewEstimate({
+      finishType,
+      colorName,
+      colorHex,
+      roomName: roomName || 'Sala de Estar / Amb. Simulado',
+    });
+    setCurrentView('new-estimate');
+  };
+
   const markNotificationAsRead = (id: string) => {
     setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, read: true } : n)));
+  };
+
+  const markAllNotificationsAsRead = () => {
+    setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
   };
 
   const openPublicProposal = (estimateId: string) => {
@@ -379,11 +489,22 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         toggleDarkMode,
         addEstimate,
         updateEstimate,
+        updateEstimateStatus,
+        duplicateEstimate,
         deleteEstimate,
         signEstimate,
         addCustomer,
+        updateCustomer,
+        deleteCustomer,
+        selectedCustomerIdForNewEstimate,
+        setSelectedCustomerIdForNewEstimate,
+        simulationPresetForNewEstimate,
+        setSimulationPresetForNewEstimate,
+        startNewEstimateForCustomer,
+        startNewEstimateFromSimulation,
         addAuditLog,
         markNotificationAsRead,
+        markAllNotificationsAsRead,
         openPublicProposal,
         openPdfView,
         updateCompanySettings,

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import {
   Printer,
@@ -13,7 +13,10 @@ import {
   Phone,
   Mail,
   MapPin,
-  QrCode
+  QrCode,
+  MessageCircle,
+  Copy,
+  CheckCircle2
 } from 'lucide-react';
 
 export const CommercialPdfView: React.FC = () => {
@@ -24,6 +27,8 @@ export const CommercialPdfView: React.FC = () => {
     selectedEstimateId,
     setCurrentView
   } = useApp();
+
+  const [copied, setCopied] = useState(false);
 
   const estimate = estimates.find((e) => e.id === selectedEstimateId) || estimates[0];
   const customer = customers.find((c) => c.id === estimate?.customerId);
@@ -48,10 +53,27 @@ export const CommercialPdfView: React.FC = () => {
     window.print();
   };
 
+  const handleCopyLink = () => {
+    const url = `${window.location.origin}/#public-view-${estimate.id}`;
+    navigator.clipboard.writeText(url);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2500);
+  };
+
+  const handleWhatsApp = () => {
+    const text = encodeURIComponent(
+      `Olá! Segue a proposta comercial de pintura da ${currentCompany.name}.\n` +
+      `Código: ${estimate.code}\n` +
+      `Valor: R$ ${estimate.finalTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}\n` +
+      `Acesse a proposta digital para visualizar e assinar: ${window.location.origin}/#public-view-${estimate.id}`
+    );
+    window.open(`https://wa.me/?text=${text}`, '_blank');
+  };
+
   return (
     <div className="min-h-screen bg-slate-100 dark:bg-slate-950 py-8 px-4 sm:px-6">
       {/* Floating Action Controls */}
-      <div className="no-print max-w-4xl mx-auto mb-6 flex items-center justify-between">
+      <div className="no-print max-w-4xl mx-auto mb-6 flex flex-wrap items-center justify-between gap-3">
         <button
           onClick={() => setCurrentView('dashboard')}
           className="flex items-center gap-1.5 text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition"
@@ -60,19 +82,49 @@ export const CommercialPdfView: React.FC = () => {
           <span>Voltar ao Painel</span>
         </button>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
+          <button
+            type="button"
+            onClick={handleWhatsApp}
+            className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 hover:bg-emerald-100 transition"
+            title="Enviar proposta via WhatsApp"
+          >
+            <MessageCircle className="w-4 h-4 text-emerald-600" />
+            <span>WhatsApp</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={handleCopyLink}
+            className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-xl bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 transition"
+            title="Copiar link da proposta online"
+          >
+            {copied ? (
+              <>
+                <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                <span className="text-emerald-600 font-bold">Copiado!</span>
+              </>
+            ) : (
+              <>
+                <Copy className="w-4 h-4 text-slate-500" />
+                <span>Copiar Link</span>
+              </>
+            )}
+          </button>
+
           <button
             onClick={() => setCurrentView('public-view')}
-            className="px-4 py-2 text-xs font-semibold rounded-xl bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-300 transition"
+            className="px-3.5 py-2 text-xs font-semibold rounded-xl bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-300 transition"
           >
             Ver Portal do Cliente
           </button>
+
           <button
             onClick={handlePrint}
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-bold text-xs shadow-lg shadow-sky-600/30 transition"
+            className="inline-flex items-center gap-2 px-5 py-2 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-bold text-xs shadow-lg shadow-sky-600/30 transition active:scale-95"
           >
             <Printer className="w-4 h-4" />
-            <span>Imprimir / Salvar em PDF</span>
+            <span>Imprimir / PDF</span>
           </button>
         </div>
       </div>
@@ -117,6 +169,23 @@ export const CommercialPdfView: React.FC = () => {
               Validade: {estimate.validityDays} dias
             </p>
           </div>
+        </div>
+
+        {/* Institutional Credibility Badge (30 Years Tradition) */}
+        <div className="p-4 rounded-2xl bg-amber-50/60 border-l-4 border-amber-500 border border-amber-200/80 text-xs">
+          <div className="flex items-center gap-2 mb-1">
+            <span className="font-bold text-slate-900 text-xs tracking-tight">
+              Bela Pintura LTDA — Mais de 30 Anos de Tradição e Excelência
+            </span>
+            <span className="px-2 py-0.5 rounded-full bg-amber-200 text-amber-900 text-[10px] font-bold">
+              Desde 1994
+            </span>
+          </div>
+          <p className="text-[11px] text-slate-700 leading-relaxed">
+            Empresa familiar consolidada com mais de três décadas de história em engenharia de acabamentos,
+            pintura fina residencial e predial, instalações elétricas e reformas gerais. Garantimos execução dentro das normas
+            técnicas, pontualidade rigorosa, isolamento sem poeira e respaldo contratual completo.
+          </p>
         </div>
 
         {/* Customer Information Block */}

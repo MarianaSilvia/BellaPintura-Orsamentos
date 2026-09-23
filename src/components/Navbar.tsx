@@ -15,7 +15,8 @@ import {
   ChevronDown,
   Building2,
   Check,
-  FileSpreadsheet
+  FileSpreadsheet,
+  Globe
 } from 'lucide-react';
 import { ExportDataModal } from './ExportDataModal';
 
@@ -29,6 +30,7 @@ export const Navbar: React.FC = () => {
     currentUser,
     notifications,
     markNotificationAsRead,
+    markAllNotificationsAsRead,
     isDarkMode,
     toggleDarkMode,
     selectedEstimateId,
@@ -42,6 +44,7 @@ export const Navbar: React.FC = () => {
   const unreadCount = notifications.filter((n) => !n.read).length;
 
   const navItems: { label: string; view: AppView; icon: React.FC<{ className?: string }> }[] = [
+    { label: 'Vitrine Comercial', view: 'landing', icon: Globe },
     { label: 'Painel', view: 'dashboard', icon: LayoutDashboard },
     { label: 'Novo Orçamento', view: 'new-estimate', icon: PlusCircle },
     { label: 'Clientes', view: 'customers', icon: Users },
@@ -65,10 +68,10 @@ export const Navbar: React.FC = () => {
             </div>
             <div>
               <span className="font-black text-base tracking-tight text-slate-900 dark:text-white block">
-                TintasPro <span className="text-sky-600 text-xs font-bold uppercase tracking-wider">SaaS</span>
+                Bella Pintura <span className="text-sky-600 text-xs font-bold uppercase tracking-wider">SaaS</span>
               </span>
               <span className="text-[10px] text-slate-400 font-medium block truncate max-w-[140px] sm:max-w-xs">
-                {currentCompany.name}
+                {currentCompany.tradeName || currentCompany.name}
               </span>
             </div>
           </button>
@@ -187,39 +190,63 @@ export const Navbar: React.FC = () => {
                   <span className="text-xs font-bold text-slate-900 dark:text-white">
                     Notificações do SaaS
                   </span>
-                  <span className="text-[10px] text-slate-400 font-mono">
-                    {unreadCount} nova(s)
-                  </span>
+                  <div className="flex items-center gap-2">
+                    {unreadCount > 0 && (
+                      <button
+                        onClick={markAllNotificationsAsRead}
+                        className="text-[10px] text-sky-600 dark:text-sky-400 hover:underline font-semibold"
+                      >
+                        Ler todas
+                      </button>
+                    )}
+                    <span className="text-[10px] text-slate-400 font-mono">
+                      {unreadCount} nova(s)
+                    </span>
+                  </div>
                 </div>
 
                 <div className="max-h-64 overflow-y-auto space-y-2">
-                  {notifications.map((n) => (
-                    <div
-                      key={n.id}
-                      onClick={() => markNotificationAsRead(n.id)}
-                      className={`p-2.5 rounded-xl text-xs cursor-pointer transition ${
-                        n.read
-                          ? 'bg-slate-50 dark:bg-slate-800/40 text-slate-500'
-                          : 'bg-sky-50/80 dark:bg-sky-950/60 text-slate-800 dark:text-slate-200 border border-sky-100 dark:border-sky-900'
-                      }`}
-                    >
-                      <p className="font-semibold">{n.title}</p>
-                      <p className="text-[11px] mt-0.5 text-slate-500 dark:text-slate-400">{n.message}</p>
-                    </div>
-                  ))}
+                  {notifications.length === 0 ? (
+                    <p className="text-xs text-slate-400 text-center py-4">Nenhuma notificação</p>
+                  ) : (
+                    notifications.map((n) => (
+                      <div
+                        key={n.id}
+                        onClick={() => {
+                          markNotificationAsRead(n.id);
+                          if (n.estimateId) {
+                            openPublicProposal(n.estimateId);
+                            setIsNotifOpen(false);
+                          }
+                        }}
+                        className={`p-2.5 rounded-xl text-xs cursor-pointer transition ${
+                          n.read
+                            ? 'bg-slate-50 dark:bg-slate-800/40 text-slate-500 hover:bg-slate-100'
+                            : 'bg-sky-50/80 dark:bg-sky-950/60 text-slate-800 dark:text-slate-200 border border-sky-100 dark:border-sky-900 hover:bg-sky-100/80'
+                        }`}
+                      >
+                        <p className="font-semibold">{n.title}</p>
+                        <p className="text-[11px] mt-0.5 text-slate-500 dark:text-slate-400">{n.message}</p>
+                      </div>
+                    ))
+                  )}
                 </div>
               </div>
             )}
           </div>
 
-          {/* User Avatar */}
-          <div className="flex items-center gap-2 pl-1">
+          {/* User Avatar - Clickable Profile & Settings */}
+          <button
+            onClick={() => setCurrentView('settings')}
+            className="flex items-center gap-2 pl-1 group p-1 rounded-full hover:ring-2 hover:ring-sky-500/30 transition"
+            title={`${currentUser.name} (${currentUser.role}) - Clique para Configurações`}
+          >
             <img
               src={currentUser.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80'}
               alt={currentUser.name}
-              className="w-8 h-8 rounded-full object-cover border border-slate-200 dark:border-slate-700"
+              className="w-8 h-8 rounded-full object-cover border border-slate-200 dark:border-slate-700 group-hover:scale-105 transition"
             />
-          </div>
+          </button>
 
         </div>
       </div>
